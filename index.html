@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vijay Uriti — AWS DevOps Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #0a0e17;
+    --bg2:       #0f1623;
+    --bg3:       #151d2e;
+    --panel:     #1a2235;
+    --border:    #232e45;
+    --text:      #c9d5e8;
+    --muted:     #5a6a85;
+    --aws:       #ff9900;
+    --k8s:       #326ce5;
+    --docker:    #0db7ed;
+    --terraform: #7b42bc;
+    --jenkins:   #d33833;
+    --green:     #39d353;
+    --mono:      'JetBrains Mono', monospace;
+    --sans:      'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--aws); border-radius: 2px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 3rem;
+    background: rgba(10,14,23,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: .85rem;
+    color: var(--aws);
+    letter-spacing: .05em;
+  }
+  .nav-logo span { color: var(--green); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: .75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--aws); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    padding: 6rem 3rem 4rem;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(50,108,229,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(50,108,229,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridPan 30s linear infinite;
+  }
+  @keyframes gridPan { from { transform: translateY(0); } to { transform: translateY(40px); } }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: .12;
+    pointer-events: none;
+  }
+  .glow-aws  { background: var(--aws);       top: -10%; left: -5%; }
+  .glow-k8s  { background: var(--k8s);       bottom: -10%; right: -5%; }
+  .glow-tf   { background: var(--terraform); top: 30%; right: 20%; width: 300px; height: 300px; }
+
+  .hero-content { position: relative; max-width: 900px; width: 100%; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--mono); font-size: .7rem;
+    color: var(--green); border: 1px solid rgba(57,211,83,.25);
+    background: rgba(57,211,83,.06);
+    padding: .35rem .85rem; border-radius: 2rem;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .6s ease both;
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+  .hero-name {
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.02em;
+    margin-bottom: .5rem;
+    animation: fadeUp .7s .1s ease both;
+  }
+  .hero-name .first { color: #fff; }
+  .hero-name .last  { color: var(--aws); }
+
+  .hero-title {
+    font-family: var(--mono);
+    font-size: clamp(.9rem, 2vw, 1.1rem);
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    animation: fadeUp .7s .2s ease both;
+  }
+  .hero-title .hl { color: var(--docker); }
+
+  .hero-summary {
+    max-width: 620px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #8899bb;
+    margin-bottom: 2.5rem;
+    animation: fadeUp .7s .3s ease both;
+  }
+
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-bottom: 2.5rem;
+    animation: fadeUp .7s .4s ease both;
+  }
+  .stat-num {
+    font-size: 2rem; font-weight: 800; color: #fff;
+    line-height: 1;
+  }
+  .stat-num span { color: var(--aws); }
+  .stat-label {
+    font-family: var(--mono); font-size: .7rem;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: .1em; margin-top: .2rem;
+  }
+
+  .hero-cta {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeUp .7s .5s ease both;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .75rem 1.75rem;
+    font-family: var(--mono); font-size: .8rem;
+    letter-spacing: .05em; text-decoration: none;
+    border-radius: 4px; transition: all .2s;
+    cursor: pointer; border: none;
+  }
+  .btn-primary {
+    background: var(--aws); color: #000; font-weight: 700;
+  }
+  .btn-primary:hover { background: #ffa820; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,153,0,.3); }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--aws); color: var(--aws); transform: translateY(-2px); }
+
+  /* terminal box */
+  .hero-terminal {
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    width: 380px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeUp .8s .3s ease both;
+    display: none;
+  }
+  @media(min-width: 1100px){ .hero-terminal { display: block; } }
+  .term-bar {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .6rem 1rem;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+  .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .d-red { background: #ff5f57; }
+  .d-yel { background: #ffbd2e; }
+  .d-grn { background: #28c840; }
+  .term-title { font-family: var(--mono); font-size: .65rem; color: var(--muted); margin-left: auto; }
+  .term-body { padding: 1.2rem; font-family: var(--mono); font-size: .72rem; line-height: 1.9; }
+  .t-prompt { color: var(--green); }
+  .t-cmd { color: #fff; }
+  .t-out { color: var(--muted); }
+  .t-val { color: var(--aws); }
+  .t-ok  { color: var(--green); }
+  .cursor {
+    display: inline-block; width: 8px; height: 13px;
+    background: var(--green); vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── SECTIONS ── */
+  section { padding: 6rem 3rem; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-family: var(--mono); font-size: .7rem;
+    color: var(--aws); letter-spacing: .15em;
+    text-transform: uppercase; margin-bottom: .5rem;
+  }
+  .section-title {
+    font-size: 2.5rem; font-weight: 800;
+    color: #fff; margin-bottom: 3rem;
+    line-height: 1.1;
+  }
+  .section-title em { font-style: normal; color: var(--aws); }
+
+  /* divider */
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+  .skill-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: border-color .2s, transform .2s;
+    position: relative; overflow: hidden;
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--card-accent, var(--aws));
+  }
+  .skill-card:hover { border-color: var(--card-accent, var(--aws)); transform: translateY(-3px); }
+  .card-icon { font-size: 1.5rem; margin-bottom: .75rem; }
+  .card-title {
+    font-family: var(--mono); font-size: .8rem;
+    color: var(--card-accent, var(--aws));
+    letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: .75rem;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .tag {
+    font-family: var(--mono); font-size: .65rem;
+    padding: .25rem .6rem; border-radius: 3px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: all .15s;
+  }
+  .tag:hover { background: rgba(255,153,0,.1); border-color: var(--aws); color: var(--aws); }
+
+  /* ── EXPERIENCE ── */
+  .exp-wrapper {
+    display: grid; grid-template-columns: 1fr;
+    gap: 0; position: relative;
+  }
+  .exp-wrapper::before {
+    content: '';
+    position: absolute; left: 1.25rem; top: 0; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .exp-item {
+    padding-left: 3.5rem; padding-bottom: 3rem;
+    position: relative;
+  }
+  .exp-dot {
+    position: absolute; left: .75rem; top: .35rem;
+    width: 1rem; height: 1rem; border-radius: 50%;
+    background: var(--aws);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 12px rgba(255,153,0,.5);
+  }
+  .exp-date {
+    font-family: var(--mono); font-size: .68rem;
+    color: var(--aws); letter-spacing: .1em;
+    text-transform: uppercase; margin-bottom: .4rem;
+  }
+  .exp-role {
+    font-size: 1.3rem; font-weight: 700; color: #fff;
+    margin-bottom: .2rem;
+  }
+  .exp-company {
+    font-family: var(--mono); font-size: .78rem;
+    color: var(--docker); margin-bottom: 1rem;
+  }
+  .exp-points { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+  .exp-points li {
+    font-size: .88rem; line-height: 1.65; color: #8899bb;
+    padding-left: 1.2rem; position: relative;
+  }
+  .exp-points li::before {
+    content: '▸'; position: absolute; left: 0;
+    color: var(--aws); font-size: .7rem; top: .15rem;
+  }
+  .exp-points li strong { color: var(--text); }
+
+  /* ── ACHIEVEMENTS ── */
+  .ach-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .ach-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all .2s;
+  }
+  .ach-card:hover { border-color: var(--k8s); transform: translateY(-3px); }
+  .ach-num {
+    font-size: 2.5rem; font-weight: 800;
+    color: var(--aws); line-height: 1;
+    margin-bottom: .4rem;
+  }
+  .ach-text { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+
+  /* ── EDUCATION ── */
+  .edu-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    max-width: 600px;
+  }
+  .edu-icon { font-size: 2.5rem; }
+  .edu-degree { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: .3rem; }
+  .edu-college { font-family: var(--mono); font-size: .75rem; color: var(--docker); margin-bottom: .3rem; }
+  .edu-year { font-family: var(--mono); font-size: .7rem; color: var(--muted); }
+
+  /* ── CONTACT ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .contact-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .contact-card:hover { border-color: var(--aws); transform: translateY(-2px); }
+  .contact-icon { font-size: 1.5rem; }
+  .contact-label { font-family: var(--mono); font-size: .65rem; color: var(--muted); margin-bottom: .2rem; }
+  .contact-value { font-size: .85rem; color: var(--text); word-break: break-all; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: var(--mono); font-size: .7rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── PIPELINE SECTION ── */
+  .pipeline {
+    display: flex; align-items: center; gap: 0;
+    overflow-x: auto; padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  .pipe-step {
+    flex-shrink: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .75rem 1.2rem;
+    font-family: var(--mono); font-size: .72rem;
+    color: var(--text); text-align: center;
+    position: relative;
+    transition: all .2s;
+  }
+  .pipe-step:hover { border-color: var(--step-color, var(--aws)); color: var(--step-color, var(--aws)); }
+  .pipe-step .step-icon { font-size: 1.1rem; display: block; margin-bottom: .2rem; }
+  .pipe-arrow {
+    font-family: var(--mono); color: var(--muted); font-size: .9rem;
+    padding: 0 .5rem; flex-shrink: 0;
+  }
+
+  @media(max-width: 768px){
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .hero-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>$</span> vijay<span>@</span>devops</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="padding-top:0;max-width:100%;position:relative;">
+  <div class="hero-grid"></div>
+  <div class="glow-aws hero-glow"></div>
+  <div class="glow-k8s hero-glow"></div>
+  <div class="glow-tf hero-glow"></div>
+
+  <div style="max-width:1100px;margin:0 auto;padding:8rem 3rem 4rem;position:relative;display:flex;align-items:center;gap:3rem;">
+    <div class="hero-content" style="position:static;flex:1;">
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        Available for opportunities
+      </div>
+
+      <h1 class="hero-name">
+        <span class="first">VIJAY </span><span class="last">URITI</span>
+      </h1>
+      <p class="hero-title">
+        AWS DevOps Engineer &nbsp;·&nbsp;
+        <span class="hl">CI/CD</span> · Cloud Infrastructure · Automation
+      </p>
+      <p class="hero-summary">
+        2 years 10 months of hands-on experience designing and maintaining CI/CD pipelines, cloud infrastructure, and deployment automation on AWS. Specialist in Terraform, Docker, Kubernetes, and DevSecOps practices.
+      </p>
+
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">2<span>y</span> 10<span>m</span></div>
+          <div class="stat-label">Experience</div>
+        </div>
+        <div>
+          <div class="stat-num">30<span>%</span></div>
+          <div class="stat-label">Release cycle reduction</div>
+        </div>
+        <div>
+          <div class="stat-num">40<span>%</span></div>
+          <div class="stat-label">MTTR reduction</div>
+        </div>
+      </div>
+
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary">📬 Get In Touch</a>
+        <a href="#experience" class="btn btn-outline">View Experience →</a>
+      </div>
+    </div>
+
+    <!-- Terminal -->
+    <div class="hero-terminal" style="position:static;transform:none;flex-shrink:0;">
+      <div class="term-bar">
+        <div class="term-dot d-red"></div>
+        <div class="term-dot d-yel"></div>
+        <div class="term-dot d-grn"></div>
+        <div class="term-title">vijay@aws-devops ~ zsh</div>
+      </div>
+      <div class="term-body">
+        <div><span class="t-prompt">vijay@aws</span> <span class="t-cmd">$ whoami</span></div>
+        <div class="t-val">Uriti Vijay — AWS DevOps Engineer</div>
+        <br/>
+        <div><span class="t-prompt">vijay@aws</span> <span class="t-cmd">$ cat skills.yml</span></div>
+        <div class="t-out">cloud: <span class="t-val">AWS</span></div>
+        <div class="t-out">iac: <span class="t-val">Terraform</span></div>
+        <div class="t-out">cicd: <span class="t-val">Jenkins · CodePipeline</span></div>
+        <div class="t-out">containers: <span class="t-val">Docker · Kubernetes</span></div>
+        <div class="t-out">monitoring: <span class="t-val">Grafana · Prometheus</span></div>
+        <div class="t-out">scripting: <span class="t-val">Python · Bash</span></div>
+        <br/>
+        <div><span class="t-prompt">vijay@aws</span> <span class="t-cmd">$ terraform plan</span></div>
+        <div class="t-ok">✔ Plan: 12 to add, 0 to change, 0 to destroy.</div>
+        <br/>
+        <div><span class="t-prompt">vijay@aws</span> <span class="t-cmd">$ kubectl get pods</span></div>
+        <div class="t-ok">All pods running — 0 errors</div>
+        <br/>
+        <div><span class="t-prompt">vijay@aws</span> <span class="t-cmd">$ _</span><span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PIPELINE BANNER -->
+<div style="background:var(--bg2);padding:2rem 3rem;overflow-x:auto;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:1rem;letter-spacing:.1em;text-transform:uppercase;">CI/CD Pipeline — Typical Workflow</div>
+    <div class="pipeline">
+      <div class="pipe-step" style="--step-color:var(--k8s)"><span class="step-icon">📝</span>Code Push</div>
+      <div class="pipe-arrow">──▶</div>
+      <div class="pipe-step" style="--step-color:#d33833"><span class="step-icon">⚙️</span>Jenkins Build</div>
+      <div class="pipe-arrow">──▶</div>
+      <div class="pipe-step" style="--step-color:var(--aws)"><span class="step-icon">🔍</span>SonarQube</div>
+      <div class="pipe-arrow">──▶</div>
+      <div class="pipe-step" style="--step-color:var(--docker)"><span class="step-icon">🐳</span>Docker Image</div>
+      <div class="pipe-arrow">──▶</div>
+      <div class="pipe-step" style="--step-color:var(--aws)"><span class="step-icon">🛡️</span>Trivy Scan</div>
+      <div class="pipe-arrow">──▶</div>
+      <div class="pipe-step" style="--step-color:var(--terraform)"><span class="step-icon">☁️</span>AWS Deploy</div>
+      <div class="pipe-arrow">──▶</div>
+      <div class="pipe-step" style="--step-color:var(--k8s)"><span class="step-icon">☸️</span>K8s Cluster</div>
+      <div class="pipe-arrow">──▶</div>
+      <div class="pipe-step" style="--step-color:var(--green)"><span class="step-icon">📊</span>Grafana Monitor</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">// 02. toolkit</div>
+  <h2 class="section-title">Technical <em>Skills</em></h2>
+
+  <div class="skills-grid">
+    <div class="skill-card" style="--card-accent:var(--aws)">
+      <div class="card-icon">☁️</div>
+      <div class="card-title">Cloud & AWS</div>
+      <div class="tag-list">
+        <span class="tag">EC2</span><span class="tag">S3</span><span class="tag">IAM</span>
+        <span class="tag">VPC</span><span class="tag">CloudWatch</span><span class="tag">SNS</span>
+        <span class="tag">ASG</span><span class="tag">ELB</span><span class="tag">RDS</span>
+        <span class="tag">CodePipeline</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--card-accent:var(--jenkins)">
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">CI/CD & DevOps</div>
+      <div class="tag-list">
+        <span class="tag">Jenkins</span><span class="tag">AWS CodePipeline</span>
+        <span class="tag">Maven</span><span class="tag">Git</span><span class="tag">GitHub</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--card-accent:var(--terraform)">
+      <div class="card-icon">🏗️</div>
+      <div class="card-title">Infrastructure as Code</div>
+      <div class="tag-list">
+        <span class="tag">Terraform</span><span class="tag">CloudFormation</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--card-accent:var(--docker)">
+      <div class="card-icon">🐳</div>
+      <div class="card-title">Containers & Platforms</div>
+      <div class="tag-list">
+        <span class="tag">Docker</span><span class="tag">Kubernetes</span>
+        <span class="tag">EKS</span><span class="tag">Autoscaling</span>
+        <span class="tag">Replica Sets</span><span class="tag">Load Balancing</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--card-accent:#e8a54b">
+      <div class="card-icon">📊</div>
+      <div class="card-title">Monitoring & Logging</div>
+      <div class="tag-list">
+        <span class="tag">Prometheus</span><span class="tag">Grafana</span>
+        <span class="tag">CloudWatch</span><span class="tag">Datadog</span>
+        <span class="tag">ELK Stack</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--card-accent:var(--green)">
+      <div class="card-icon">🐍</div>
+      <div class="card-title">Scripting & Automation</div>
+      <div class="tag-list">
+        <span class="tag">Python</span><span class="tag">Bash/Shell</span>
+        <span class="tag">Linux (Ubuntu)</span><span class="tag">RHEL</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--card-accent:#ff6b6b">
+      <div class="card-icon">🛡️</div>
+      <div class="card-title">DevSecOps</div>
+      <div class="tag-list">
+        <span class="tag">SonarQube</span><span class="tag">OWASP</span>
+        <span class="tag">Trivy</span><span class="tag">AWS Secrets Manager</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--card-accent:var(--k8s)">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Methodologies</div>
+      <div class="tag-list">
+        <span class="tag">Agile/Scrum</span><span class="tag">SDLC</span>
+        <span class="tag">ITIL</span><span class="tag">Waterfall</span>
+        <span class="tag">VPC Networking</span><span class="tag">DNS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">// 03. experience</div>
+  <h2 class="section-title">Work <em>Experience</em></h2>
+
+  <div class="exp-wrapper">
+    <div class="exp-item">
+      <div class="exp-dot"></div>
+      <div class="exp-date">July 2023 – Present</div>
+      <div class="exp-role">System Engineer / AWS DevOps Engineer</div>
+      <div class="exp-company">Sutherland Global Digital India Pvt. Ltd (formerly ATMECS Technologies)</div>
+      <ul class="exp-points">
+        <li>Designed, implemented, and maintained <strong>CI/CD pipelines using Jenkins and AWS CodePipeline</strong>, reducing release cycle time by <strong>30%</strong> and improving delivery reliability.</li>
+        <li>Managed and optimised AWS cloud infrastructure — <strong>EC2, S3, VPC, IAM, ELB, ASG, CloudWatch</strong> — applying best practices for availability, performance, and security.</li>
+        <li>Automated infrastructure provisioning using <strong>Terraform (IaC)</strong>, enabling consistent environment setup across dev, staging, and production on AWS.</li>
+        <li>Managed Git repositories and enforced branching, merging, tagging, and versioning strategies, reducing merge conflicts across development and QA teams.</li>
+        <li>Monitored applications using <strong>Prometheus, Grafana, CloudWatch, and Datadog</strong>, building dashboards that reduced mean time to resolution by <strong>40%</strong>.</li>
+        <li>Implemented <strong>DevSecOps</strong> by integrating SonarQube, OWASP, Trivy, and AWS Secrets Manager into CI/CD pipelines for proactive vulnerability detection.</li>
+        <li>Containerized microservices using <strong>Docker and Kubernetes</strong>, configuring pod autoscaling, replica sets, and load balancing for high-availability architectures.</li>
+        <li>Executed zero-downtime <strong>blue-green and canary deployment</strong> strategies on Kubernetes clusters, validating system resilience during feature releases.</li>
+        <li>Collaborated with dev, QA, and partner teams in <strong>Agile/Scrum</strong> workflows; documented CI/CD configs, infrastructure architecture, and operational runbooks.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ACHIEVEMENTS -->
+<section id="about">
+  <div class="section-label">// 04. impact</div>
+  <h2 class="section-title">Key <em>Achievements</em></h2>
+  <div class="ach-grid">
+    <div class="ach-card">
+      <div class="ach-num">30%</div>
+      <div class="ach-text">Release Cycle Time Reduction</div>
+    </div>
+    <div class="ach-card">
+      <div class="ach-num">40%</div>
+      <div class="ach-text">MTTR Reduction via Monitoring</div>
+    </div>
+    <div class="ach-card">
+      <div class="ach-num">0</div>
+      <div class="ach-text">Downtime Blue-Green Deployments</div>
+    </div>
+    <div class="ach-card">
+      <div class="ach-num">3+</div>
+      <div class="ach-text">Environments Automated via Terraform</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">// 05. education</div>
+  <h2 class="section-title">Academic <em>Background</em></h2>
+  <div class="edu-card">
+    <div class="edu-icon">🎓</div>
+    <div>
+      <div class="edu-degree">B.E. Electronics & Communication Engineering</div>
+      <div class="edu-college">Chirala Engineering College</div>
+      <div class="edu-year">2019 – 2023</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">// 06. contact</div>
+  <h2 class="section-title">Get In <em>Touch</em></h2>
+  <div class="contact-grid">
+    <a class="contact-card" href="mailto:uritivijay9989@gmail.com">
+      <div class="contact-icon">📧</div>
+      <div>
+        <div class="contact-label">Email</div>
+        <div class="contact-value">uritivijay9989@gmail.com</div>
+      </div>
+    </a>
+    <a class="contact-card" href="tel:+917674873090">
+      <div class="contact-icon">📞</div>
+      <div>
+        <div class="contact-label">Phone</div>
+        <div class="contact-value">+91 7674873090</div>
+      </div>
+    </a>
+    <div class="contact-card">
+      <div class="contact-icon">📍</div>
+      <div>
+        <div class="contact-label">Location</div>
+        <div class="contact-value">Andhra Pradesh, India</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Uriti Vijay · AWS DevOps Engineer · Built with 🖤 and Terraform instincts</p>
+</footer>
+
+</body>
+</html>
