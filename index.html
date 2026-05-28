@@ -519,6 +519,42 @@
   }
   .desc-block p { font-size:.85rem;line-height:1.65;color:#8899bb; }
 
+
+  /* ── PROFILE PICTURE ── */
+  .profile-wrap {
+    flex-shrink: 0;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    position: relative;
+  }
+  .profile-wrap::before {
+    content:'';
+    position:absolute;inset:-3px;
+    border-radius:50%;
+    background: conic-gradient(var(--aws), var(--k8s), var(--docker), var(--terraform), var(--aws));
+    animation: spinRing 4s linear infinite;
+    z-index:0;
+  }
+  .profile-wrap::after {
+    content:'';
+    position:absolute;inset:3px;
+    border-radius:50%;
+    background: var(--bg);
+    z-index:1;
+  }
+  @keyframes spinRing { to { transform: rotate(360deg); } }
+  .profile-img {
+    position:absolute;inset:6px;
+    border-radius:50%;
+    object-fit:cover;
+    width:calc(100% - 12px); height:calc(100% - 12px);
+    z-index:2;
+    display:block;
+  }
+  @media(max-width:768px){
+    .profile-wrap { width:120px;height:120px; }
+  }
+
 </style>
 </head>
 <body>
@@ -543,6 +579,9 @@
   <div class="glow-tf hero-glow"></div>
 
   <div style="max-width:1100px;margin:0 auto;padding:8rem 3rem 4rem;position:relative;display:flex;align-items:center;gap:3rem;">
+    <div class="profile-wrap" id="profile-wrap" style="display:none;">
+      <img id="profile-img" class="profile-img" src="" alt="Vijay Uriti"/>
+    </div>
     <div class="hero-content" style="position:static;flex:1;">
       <div class="hero-badge">
         <div class="badge-dot"></div>
@@ -562,15 +601,15 @@
 
       <div class="hero-stats">
         <div>
-          <div class="stat-num">2<span>y</span> 10<span>m</span></div>
+          <div class="stat-num" id="exp-display">0y 0m</div>
           <div class="stat-label">Experience</div>
         </div>
         <div>
-          <div class="stat-num">30<span>%</span></div>
+          <div class="stat-num"><span class="countup" data-target="30" data-suffix="%">0%</span></div>
           <div class="stat-label">Release cycle reduction</div>
         </div>
         <div>
-          <div class="stat-num">40<span>%</span></div>
+          <div class="stat-num"><span class="countup" data-target="40" data-suffix="%">0%</span></div>
           <div class="stat-label">MTTR reduction</div>
         </div>
       </div>
@@ -894,19 +933,19 @@ document.addEventListener('keydown', e => {
   <h2 class="section-title">Key <em>Achievements</em></h2>
   <div class="ach-grid">
     <div class="ach-card">
-      <div class="ach-num">30%</div>
+      <div class="ach-num"><span class="countup" data-target="30" data-suffix="%">0%</span></div>
       <div class="ach-text">Release Cycle Time Reduction</div>
     </div>
     <div class="ach-card">
-      <div class="ach-num">40%</div>
+      <div class="ach-num"><span class="countup" data-target="40" data-suffix="%">0%</span></div>
       <div class="ach-text">MTTR Reduction via Monitoring</div>
     </div>
     <div class="ach-card">
-      <div class="ach-num">0</div>
+      <div class="ach-num"><span class="countup" data-target="0" data-suffix="">0</span></div>
       <div class="ach-text">Downtime Blue-Green Deployments</div>
     </div>
     <div class="ach-card">
-      <div class="ach-num">3+</div>
+      <div class="ach-num"><span class="countup" data-target="3" data-suffix="+">0+</span></div>
       <div class="ach-text">Environments Automated via Terraform</div>
     </div>
   </div>
@@ -968,6 +1007,8 @@ document.addEventListener('keydown', e => {
 <script>
 // Inject images after images.js loads
 window.addEventListener('DOMContentLoaded', function() {
+
+  // ── Inject screenshot images ──
   var map = {
     'ss-sonar':  PROJECT_IMAGES.sonar,
     'ss-argocd': PROJECT_IMAGES.argocd,
@@ -981,7 +1022,6 @@ window.addEventListener('DOMContentLoaded', function() {
     var el = document.getElementById(id);
     if (el) el.src = src;
   });
-  // Also patch screenshots array
   if (typeof PROJECT_IMAGES !== 'undefined') {
     screenshots[0].src = PROJECT_IMAGES.sonar;
     screenshots[1].src = PROJECT_IMAGES.argocd;
@@ -990,7 +1030,100 @@ window.addEventListener('DOMContentLoaded', function() {
     screenshots[4].src = PROJECT_IMAGES.m1;
     screenshots[5].src = PROJECT_IMAGES.m2;
     screenshots[6].src = PROJECT_IMAGES.m3;
+
+    // ── Profile picture ──
+    var profileImg = document.getElementById('profile-img');
+    var profileWrap = document.getElementById('profile-wrap');
+    if (profileImg && PROJECT_IMAGES.profile) {
+      profileImg.src = PROJECT_IMAGES.profile;
+      profileWrap.style.display = 'block';
+    }
   }
+
+  // ── Dynamic experience calculator ──
+  // Joining date: 11 July 2023
+  function calcExperience() {
+    var join = new Date(2023, 6, 11); // month is 0-indexed; 6 = July
+    var now  = new Date();
+    var years  = now.getFullYear() - join.getFullYear();
+    var months = now.getMonth()    - join.getMonth();
+    // Only count fully completed months
+    // If current day < joining day, the current month is still running — don't count it
+    if (now.getDate() < join.getDate()) months -= 1;
+    if (months < 0) { years -= 1; months += 12; }
+    return { years: years, months: months };
+  }
+
+  var exp = calcExperience();
+
+  // ── Count-up animation ──
+  function easeOut(t) { return t * (2 - t); }
+
+  function animateCountUp(el, targetVal, suffix, duration) {
+    var start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      var eased = easeOut(progress);
+      var current = Math.floor(eased * targetVal);
+      el.textContent = current + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = targetVal + suffix;
+    }
+    requestAnimationFrame(step);
+  }
+
+  function animateExperience(targetYears, targetMonths, duration) {
+    var el = document.getElementById('exp-display');
+    if (!el) return;
+    var totalTargetMonths = targetYears * 12 + targetMonths;
+    var start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      var eased = easeOut(progress);
+      var currentTotal = Math.floor(eased * totalTargetMonths);
+      var y = Math.floor(currentTotal / 12);
+      var m = currentTotal % 12;
+      el.textContent = y + 'y ' + m + 'm';
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = targetYears + 'y ' + targetMonths + 'm';
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── Intersection Observer: trigger countup when visible ──
+  var animated = false;
+  var achAnimated = false;
+
+  // Hero stats: trigger on load after short delay
+  setTimeout(function() {
+    animateExperience(exp.years, exp.months, 1800);
+    // animate hero % stats
+    document.querySelectorAll('.hero-stats .countup').forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-target'));
+      var suffix = el.getAttribute('data-suffix') || '';
+      animateCountUp(el, target, suffix, 1800);
+    });
+  }, 400);
+
+  // Achievement cards: trigger when scrolled into view
+  var achObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !achAnimated) {
+        achAnimated = true;
+        document.querySelectorAll('.ach-card .countup').forEach(function(el) {
+          var target = parseInt(el.getAttribute('data-target'));
+          var suffix = el.getAttribute('data-suffix') || '';
+          animateCountUp(el, target, suffix, 1400);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  var achSection = document.querySelector('.ach-grid');
+  if (achSection) achObserver.observe(achSection);
+
 });
 </script>
 
