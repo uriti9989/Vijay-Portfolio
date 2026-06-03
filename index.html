@@ -680,9 +680,6 @@
 
 <div class="divider"></div>
 
-
-<div class="divider"></div>
-
 <!-- PROJECTS -->
 <section id="projects">
   <div class="section-label">// 03b. projects</div>
@@ -727,7 +724,7 @@
 
   <div class="screenshot-grid">
     <div>
-      <img id="main-ss" src="" id="ss-sonar" alt="screenshot" style="width:100%;border-radius:6px;border:1px solid var(--border);cursor:zoom-in;object-fit:cover;max-height:320px;" onclick="zoomImg(this.src)"/>
+      <img id="main-ss" src="" alt="screenshot" style="width:100%;border-radius:6px;border:1px solid var(--border);cursor:zoom-in;object-fit:cover;max-height:320px;" onclick="zoomImg(this.src)"/>
       <div id="main-caption" style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:.4rem;text-align:center;">SonarQube — Quality Gate Passed</div>
     </div>
     <div class="ss-thumbs">
@@ -775,20 +772,36 @@
 </div>
 
 <script>
+// Directly map to the local file names you provided
+const SAFE_IMAGES = {
+  profile: "profile (2)_2.jpg",
+  sonar: "Sonar_2.jpg",
+  argocd: "ArgoCD_2.jpg",
+  f1: "Final1_2.png",
+  f2: "Final2_2.jpg",
+  m1: "Monitor1_2.jpg",
+  m2: "Monitor2_2.jpg",
+  m3: "Monitor3_2.jpg"
+};
+
 const screenshots = [
-  { src: PROJECT_IMAGES.sonar,  cap: "SonarQube — Quality Gate Passed" },
-  { src: PROJECT_IMAGES.argocd, cap: "ArgoCD — Healthy & Synced to master" },
-  { src: PROJECT_IMAGES.f1,     cap: "App — Login Page (AWS ALB)" },
-  { src: PROJECT_IMAGES.f2,     cap: "App — DevOps Social Network Dashboard" },
-  { src: PROJECT_IMAGES.m1,     cap: "Grafana — Kubernetes Cluster Dashboard (Prometheus)" },
-  { src: PROJECT_IMAGES.m2,     cap: "Grafana — Network I/O Pressure & Cluster Usage" },
-  { src: PROJECT_IMAGES.m3,     cap: "Grafana — Node Exporter Full (CPU/Mem/Disk)" },
+  { src: SAFE_IMAGES.sonar,  cap: "SonarQube — Quality Gate Passed" },
+  { src: SAFE_IMAGES.argocd, cap: "ArgoCD — Healthy & Synced to master" },
+  { src: SAFE_IMAGES.f1,     cap: "App — Login Page (AWS ALB)" },
+  { src: SAFE_IMAGES.f2,     cap: "App — DevOps Social Network Dashboard" },
+  { src: SAFE_IMAGES.m1,     cap: "Grafana — Kubernetes Cluster Dashboard (Prometheus)" },
+  { src: SAFE_IMAGES.m2,     cap: "Grafana — Network I/O Pressure & Cluster Usage" },
+  { src: SAFE_IMAGES.m3,     cap: "Grafana — Node Exporter Full (CPU/Mem/Disk)" },
 ];
 
 function openModal(id) {
   document.getElementById('modal-overlay').style.display = 'block';
   document.getElementById(id + '-modal').style.display = 'block';
   document.body.style.overflow = 'hidden';
+  // Load initial image if not already set
+  if(!document.getElementById('main-ss').src || document.getElementById('main-ss').src === window.location.href) {
+    switchImg(0);
+  }
 }
 function closeModal() {
   document.getElementById('modal-overlay').style.display = 'none';
@@ -1002,53 +1015,40 @@ document.addEventListener('keydown', e => {
   <p>© 2025 Uriti Vijay · AWS DevOps Engineer · Built with 🖤 and Terraform instincts</p>
 </footer>
 
-
-<script src="images.js"></script>
 <script>
-// Inject images after images.js loads
 window.addEventListener('DOMContentLoaded', function() {
 
-  // ── Inject screenshot images ──
+  // ── Inject screenshot images using the local file map ──
   var map = {
-    'ss-sonar':  PROJECT_IMAGES.sonar,
-    'ss-argocd': PROJECT_IMAGES.argocd,
-    'ss-f1':     PROJECT_IMAGES.f1,
-    'ss-f2':     PROJECT_IMAGES.f2,
-    'ss-m1':     PROJECT_IMAGES.m1,
-    'ss-m2':     PROJECT_IMAGES.m2,
-    'ss-m3':     PROJECT_IMAGES.m3
+    'ss-sonar':  SAFE_IMAGES.sonar,
+    'ss-argocd': SAFE_IMAGES.argocd,
+    'ss-f1':     SAFE_IMAGES.f1,
+    'ss-f2':     SAFE_IMAGES.f2,
+    'ss-m1':     SAFE_IMAGES.m1,
+    'ss-m2':     SAFE_IMAGES.m2,
+    'ss-m3':     SAFE_IMAGES.m3
   };
+  
   Object.entries(map).forEach(function([id, src]) {
     var el = document.getElementById(id);
     if (el) el.src = src;
   });
-  if (typeof PROJECT_IMAGES !== 'undefined') {
-    screenshots[0].src = PROJECT_IMAGES.sonar;
-    screenshots[1].src = PROJECT_IMAGES.argocd;
-    screenshots[2].src = PROJECT_IMAGES.f1;
-    screenshots[3].src = PROJECT_IMAGES.f2;
-    screenshots[4].src = PROJECT_IMAGES.m1;
-    screenshots[5].src = PROJECT_IMAGES.m2;
-    screenshots[6].src = PROJECT_IMAGES.m3;
 
-    // ── Profile picture ──
-    var profileImg = document.getElementById('profile-img');
-    var profileWrap = document.getElementById('profile-wrap');
-    if (profileImg && PROJECT_IMAGES.profile) {
-      profileImg.src = PROJECT_IMAGES.profile;
-      profileWrap.style.display = 'block';
-    }
+  // ── Profile picture ──
+  var profileImg = document.getElementById('profile-img');
+  var profileWrap = document.getElementById('profile-wrap');
+  if (profileImg && SAFE_IMAGES.profile) {
+    profileImg.src = SAFE_IMAGES.profile;
+    profileWrap.style.display = 'block';
   }
 
   // ── Dynamic experience calculator ──
-  // Joining date: 11 July 2023
   function calcExperience() {
     var join = new Date(2023, 6, 11); // month is 0-indexed; 6 = July
     var now  = new Date();
     var years  = now.getFullYear() - join.getFullYear();
     var months = now.getMonth()    - join.getMonth();
-    // Only count fully completed months
-    // If current day < joining day, the current month is still running — don't count it
+    
     if (now.getDate() < join.getDate()) months -= 1;
     if (months < 0) { years -= 1; months += 12; }
     return { years: years, months: months };
@@ -1093,13 +1093,11 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   // ── Intersection Observer: trigger countup when visible ──
-  var animated = false;
   var achAnimated = false;
 
   // Hero stats: trigger on load after short delay
   setTimeout(function() {
     animateExperience(exp.years, exp.months, 1800);
-    // animate hero % stats
     document.querySelectorAll('.hero-stats .countup').forEach(function(el) {
       var target = parseInt(el.getAttribute('data-target'));
       var suffix = el.getAttribute('data-suffix') || '';
