@@ -772,16 +772,16 @@
 </div>
 
 <script>
-// Directly map to the local file names you provided
-const SAFE_IMAGES = {
-  profile: "profile (2)_2.jpg",
-  sonar: "Sonar_2.jpg",
-  argocd: "ArgoCD_2.jpg",
-  f1: "Final1_2.png",
-  f2: "Final2_2.jpg",
-  m1: "Monitor1_2.jpg",
-  m2: "Monitor2_2.jpg",
-  m3: "Monitor3_2.jpg"
+// Provide Fallback Image Definitions to prevent Reference Errors
+const SAFE_IMAGES = (typeof PROJECT_IMAGES !== 'undefined') ? PROJECT_IMAGES : {
+  profile: "https://ui-avatars.com/api/?name=Vijay+Uriti&background=ff9900&color=fff&size=256",
+  sonar: "https://picsum.photos/seed/sonar/800/500",
+  argocd: "https://picsum.photos/seed/argo/800/500",
+  f1: "https://picsum.photos/seed/f1/800/500",
+  f2: "https://picsum.photos/seed/f2/800/500",
+  m1: "https://picsum.photos/seed/m1/800/500",
+  m2: "https://picsum.photos/seed/m2/800/500",
+  m3: "https://picsum.photos/seed/m3/800/500"
 };
 
 const screenshots = [
@@ -1015,10 +1015,11 @@ document.addEventListener('keydown', e => {
   <p>© 2025 Uriti Vijay · AWS DevOps Engineer · Built with 🖤 and Terraform instincts</p>
 </footer>
 
+<script src="images.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', function() {
 
-  // ── Inject screenshot images using the local file map ──
+  // ── Inject screenshot images safely using the fallback map ──
   var map = {
     'ss-sonar':  SAFE_IMAGES.sonar,
     'ss-argocd': SAFE_IMAGES.argocd,
